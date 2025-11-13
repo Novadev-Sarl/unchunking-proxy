@@ -36,6 +36,7 @@ func main() {
 
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.config")
+	viper.AddConfigPath("/etc")
 
 	viper.SetConfigName("unchunking-proxy")
 	viper.SetConfigType("yaml")
@@ -44,9 +45,7 @@ func main() {
 	viper.SetEnvPrefix("UNCHUNKING")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
-	viper.SetDefault("port", 8080) // 10 minutes
-
-	viper.SafeWriteConfig()
+	viper.SetDefault("port", 8080)
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
