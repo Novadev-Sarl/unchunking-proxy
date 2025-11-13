@@ -6,6 +6,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -31,5 +34,22 @@ func main() {
 		fmt.Println(string(body))
 	})
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("~/.config")
+
+	viper.SetConfigName("unchunking-proxy")
+	viper.SetConfigType("yaml")
+
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("UNCHUNKING")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+
+	viper.SetDefault("port", 8080) // 10 minutes
+
+	viper.SafeWriteConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Fatal(http.ListenAndServe(":"+viper.GetString("port"), nil))
 }
